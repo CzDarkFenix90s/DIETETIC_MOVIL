@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<head>
+</head>
+<body>
+    <p> Ejemplo de formulario simple </p>
+    <form action="procesar.php" method=post>
+        <table border="0">
+        <tr>
+            <th>
+                <label for="nombre">nombre</label>
+                <input type="text" id="nombre" name="nombre">
+            </th>
+            <th>
+                <label for="correo">Correo Electronico</label>
+                <input type="email" id="correo" name="correo">
+            </th>
+        </tr>
+        <tr>
+            <td>
+                <label for="fecha">Fecha de nacimiento</label>
+                <input type="date" id="fecha" name="fecha">
+            </td>
+            <td>
+                <label for="color">Color Favorito</label>
+                <input type="color" id="color" name="color">
+            </td>
+            <td>
+                <label for="color">Genero</label>
+                <input type="radio" id="m" name="genero" value="M"><label for="m">Masculino</label>
+                <input type="radio" id="f" name="genero" value="F"><label for="f">Femenino</label>
+            </td>
+            <td>
+                <label for="comentarios">Comentarios:</label>
+                <textarea id="comentarios" name="comentarios" rows="5"></textarea>
+            </td>
+            <td>
+                <input type="checkbox" id="acepto" name="acepto" required>
+                <label for="acepto">Acepto los terminos y condiciones</label>
+            </td>
+            <td>
+                <label for="pais">Pais</label>
+                <select id="pais" name="pais">
+                    <option value="">Seleccione ...</option>
+                    <option value="ec">Ecuador</option>
+                    <option value="mx">Mexico</option>
+                    <option value="ve">Venezuela</option>
+                    <option value="pe">Peru</option>
+                    <option value="arg">Argentina</option>
+                    <option value="col">Colombia</option>
+                </select>
+            </td>
+        </tr>
+    </table>
+    <input type="submit" value="Enviar">
+    <input type="reset" value="Limpiar">
+</body>
+</html>
