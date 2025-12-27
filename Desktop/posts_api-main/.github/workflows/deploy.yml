@@ -18,6 +18,7 @@ jobs:
         host: ${{ secrets.VPS_HOST }}
         username: root
         key: ${{ secrets.VPS_KEY }}
+        passphrase: ${{secrets.VPS_PASSPHRASE}}
         source: "."
         target: "/home/ariel/posts_api"
 
