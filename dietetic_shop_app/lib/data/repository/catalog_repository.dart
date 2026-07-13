@@ -1,7 +1,7 @@
 // lib/domain/repository/catalog_repository.dart
 
-import '../model/category.dart';
-import '../model/product.dart';
+import '../../domain/model/category.dart';
+import '../../domain/model/product.dart';
 
 abstract class CatalogRepository {
   Future<List<Category>> getCategories();
