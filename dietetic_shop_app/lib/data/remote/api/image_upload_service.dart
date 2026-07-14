@@ -18,7 +18,7 @@ class ImageUploadException implements Exception {
 class ImageUploadService {
   ImageUploadService({FlutterSecureStorage? storage})
       : _storage = storage ?? const FlutterSecureStorage(
-          aOptions: AndroidOptions(encryptedSharedPreferences: false),
+          aOptions: AndroidOptions(encryptedSharedPreferences: true),
           iOptions: IOSOptions(accessibility: KeychainAccessibility.first_unlock),
         );
 

@@ -1,4 +1,3 @@
-
 // lib/domain/model/plan_nutricional.dart
 
 class PlanNutricional {

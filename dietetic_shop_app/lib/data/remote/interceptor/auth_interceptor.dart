@@ -14,22 +14,17 @@ class AuthInterceptor extends Interceptor {
     RequestOptions options,
     RequestInterceptorHandler handler,
   ) async {
-    // 1. REGLA DE ORO DIO: Si el path empieza con /, ignora el baseUrl.
-    // Normalizamos para asegurar que use el baseUrl (/api/)
+    // REGLA DE ORO DIO: Si el path empieza con /, ignora el baseUrl.
+    // Para que use baseUrl (.../api/), el path DEBE ser relativo (sin / inicial).
     if (options.path.startsWith('/') && !options.path.startsWith('http')) {
       options.path = options.path.substring(1);
     }
 
-    // 2. Adjuntar Token si existe
     final token = await _storage.getAccess();
     if (token != null && token.isNotEmpty) {
       options.headers['Authorization'] = 'Bearer $token';
     }
     
-    // DEBUG: Imprimir headers en modo desarrollo si falla
-    // print('REQUEST: ${options.method} ${options.uri}');
-    // print('HEADERS: ${options.headers}');
-
     handler.next(options);
   }
 
@@ -37,15 +32,12 @@ class AuthInterceptor extends Interceptor {
   void onError(DioException err, ErrorInterceptorHandler handler) async {
     final response = err.response;
 
-    // Si no es 401, no nos corresponde
     if (response?.statusCode != 401) {
       handler.next(err);
       return;
     }
     
-    // Evitar bucles infinitos en el refresh
-    final path = err.requestOptions.path;
-    if (path.contains('auth/token/refresh')) {
+    if (err.requestOptions.path.contains('/auth/token/refresh/')) {
       await _storage.clearSession();
       handler.next(err);
       return;
@@ -59,16 +51,14 @@ class AuthInterceptor extends Interceptor {
 
     final refresh = await _storage.getRefresh();
     if (refresh == null || refresh.isEmpty) {
-      // Si no hay refresh token, no podemos hacer nada
-      // Solo limpiamos si el error indica que es por falta de credenciales
-      // pero el usuario cree que está logueado
+      await _storage.clearSession();
       handler.next(err);
       return;
     }
 
     try {
       final refreshResponse = await _dio.post(
-        'auth/token/refresh/',
+        'auth/token/refresh/', // Ruta relativa
         data: {'refresh': refresh},
         options: Options(extra: {'_retry': true}),
       );

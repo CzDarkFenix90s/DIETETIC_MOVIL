@@ -1,5 +1,3 @@
-
-
 // lib/domain/model/order.dart
 
 enum OrderStatus {
