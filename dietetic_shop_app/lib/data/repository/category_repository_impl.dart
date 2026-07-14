@@ -2,7 +2,7 @@
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../domain/model/category.dart';
-import '../../domain/repository/category_repository.dart';
+import '../../../../../flutter_shop_app/lib/domain/repository/category_repository.dart';
 import '../remote/api/category_remote_datasource.dart';
 
 class CategoryRepositoryImpl implements CategoryRepository {
