@@ -71,5 +71,6 @@ lib/
     ```
 
 ## 🔐 Credenciales de Prueba (Demo)
-*   **Administrador:** `admin@dietetic.com` / `admin123`
-*   **Paciente:** `paciente@demo.com` / `paciente123`
+*   **Administrador:** `admin1` / `admin12345`
+*   **Nutricionista:** `pablo` / `pablo12345`
+*   **Paciente:** `dio` / `dio12345`
