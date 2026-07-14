@@ -1,5 +1,6 @@
 // lib/domain/model/product.dart
 
+
 class Product {
   final int id;
   final int? userId;
