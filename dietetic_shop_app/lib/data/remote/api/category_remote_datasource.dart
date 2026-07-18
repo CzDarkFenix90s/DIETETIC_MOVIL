@@ -1,6 +1,6 @@
 import 'package:dio/dio.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../../dto/category_dto.dart';
+import '../../../../../../flutter_shop_app/lib/data/dto/category_dto.dart';
 import '../../../domain/model/category.dart';
 import 'dio_client.dart';
 import 'paginated_result.dart';

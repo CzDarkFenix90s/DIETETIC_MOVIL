@@ -7,7 +7,7 @@ import '../../../theme/app_colors.dart';
 import '../../../core/utils/formatters.dart';
 import '../../../domain/model/order.dart';
 import '../../providers/orders_provider.dart';
-import '../../widgets/status_badge.dart';
+import '../../../../../../flutter_shop_app/lib/presentation/widgets/status_badge.dart';
 
 const _statusFilters = [
   ('',          'Todos'),
