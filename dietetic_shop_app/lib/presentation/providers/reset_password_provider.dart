@@ -1,56 +1,85 @@
-// lib/presentation/providers/reset_password_provider.dart
+// lib/presentation/providers/patient_provider.dart
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../../domain/repository/auth_repository.dart';
-import '../../data/repository/auth_repository_impl.dart';
+import '../../domain/model/patient_features.dart';
+import '../../data/repository/patient_repository_impl.dart';
 
-sealed class ResetPasswordState {
-  const ResetPasswordState();
-}
+// --- RUTINAS (Tabla 20) ---
+final patientRutinasProvider = FutureProvider<List<RutinaEjercicio>>((ref) async {
+  return ref.watch(patientRepositoryProvider).getRutinas();
+});
 
-class ResetPasswordIdle    extends ResetPasswordState { const ResetPasswordIdle(); }
-class ResetPasswordLoading extends ResetPasswordState { const ResetPasswordLoading(); }
-class ResetPasswordSuccess extends ResetPasswordState { const ResetPasswordSuccess(); }
+// --- PROGRESO VISUAL (Tabla 19 - Metadatos + Local) ---
+final patientProgresosProvider = FutureProvider<List<ProgresoFoto>>((ref) async {
+  return ref.watch(patientRepositoryProvider).getProgresos();
+});
 
-class ResetPasswordError extends ResetPasswordState {
-  final String message;
-  const ResetPasswordError(this.message);
-}
+// --- REGISTRO DE AGUA (Tabla 17) ---
+final patientAguaProvider = FutureProvider<List<RegistroAgua>>((ref) async {
+  return ref.watch(patientRepositoryProvider).getRegistrosAgua();
+});
 
-class ResetPasswordNotifier extends StateNotifier<ResetPasswordState> {
-  final AuthRepository _repository;
+// --- SÍNTOMAS DIARIOS (Tabla 22) ---
+final patientSintomasProvider = FutureProvider<List<SintomaDiario>>((ref) async {
+  return ref.watch(patientRepositoryProvider).getSintomas();
+});
 
-  ResetPasswordNotifier(this._repository) : super(const ResetPasswordIdle());
+// --- EVALUACIONES ANTROPOMÉTRICAS (Tabla 7) ---
+final patientEvaluacionesProvider = FutureProvider.family<List<dynamic>, int?>((ref, userId) async {
+  return ref.watch(patientRepositoryProvider).getEvaluaciones(userId: userId);
+});
 
-  Future<void> confirmReset({
-    required String uid,
-    required String token,
-    required String newPassword,
-    required String newPassword2,
-  }) async {
-    if (state is ResetPasswordLoading) return;
-    state = const ResetPasswordLoading();
+// --- ESTADÍSTICAS DINÁMICAS (Resumen de evaluaciones) ---
+final patientStatsProvider = FutureProvider<Map<String, dynamic>>((ref) async {
+  final data = await ref.watch(patientRepositoryProvider).getEvaluaciones(userId: null);
+  if (data.isEmpty) return {'peso': 0.0, 'meta': 0.0, 'imc': 0.0};
+  return data.last as Map<String, dynamic>;
+});
+
+// --- OBJETIVOS Y LOGROS (Tablas 15 y 16) ---
+final patientGoalsProvider = FutureProvider<List<dynamic>>((ref) async {
+  return ref.watch(patientRepositoryProvider).getObjetivos();
+});
+
+final patientAchievementsProvider = FutureProvider<List<dynamic>>((ref) async {
+  return ref.watch(patientRepositoryProvider).getLogros();
+});
+
+// --- PLAN ACTIVO (Tabla 6) - Mejorado para permitir actualización manual ---
+final patientActivePlanProvider = StateNotifierProvider<PatientActivePlanNotifier, AsyncValue<Map<String, dynamic>?>>((ref) {
+  return PatientActivePlanNotifier(ref.watch(patientRepositoryProvider));
+});
+
+class PatientActivePlanNotifier extends StateNotifier<AsyncValue<Map<String, dynamic>?>> {
+  final _repository;
+  PatientActivePlanNotifier(this._repository) : super(const AsyncValue.loading()) {
+    refreshPlan();
+  }
+
+  Future<void> refreshPlan() async {
+    state = const AsyncValue.loading();
     try {
-      await _repository.confirmPasswordReset(
-        uid:          uid.trim(),
-        token:        token.trim(),
-        newPassword:  newPassword,
-        newPassword2: newPassword2,
-      );
-      state = const ResetPasswordSuccess();
-    } catch (e) {
-      state = ResetPasswordError(
-        e.toString().replaceAll('Exception: ', ''),
-      );
+      final plan = await _repository.getActivePlan();
+      state = AsyncValue.data(plan);
+    } catch (e, st) {
+      state = AsyncValue.error(e, st);
     }
   }
 
-  void clearError() {
-    if (state is ResetPasswordError) state = const ResetPasswordIdle();
+  void clearPlan() {
+    state = const AsyncValue.data(null);
   }
 }
 
-final resetPasswordProvider = StateNotifierProvider.autoDispose<
-    ResetPasswordNotifier, ResetPasswordState>((ref) {
-  return ResetPasswordNotifier(ref.watch(authRepositoryProvider));
+// --- CATÁLOGO DE PLANES ---
+final patientAllPlanesProvider = FutureProvider<List<dynamic>>((ref) async {
+  return ref.watch(patientRepositoryProvider).getAllPlanes();
 });
+
+// --- REGISTROS DE EJERCICIO (Tabla 21) ---
+final patientRegistrosEjercicioProvider = FutureProvider<List<dynamic>>((ref) async {
+  return ref.watch(patientRepositoryProvider).getRegistrosEjercicio();
+});
+
+// Para persistencia inmediata en la sesión actual
+final exerciseCompletedTodayProvider = StateProvider<bool>((ref) => false);
